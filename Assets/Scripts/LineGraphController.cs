@@ -13,6 +13,8 @@ public class LineGraphController : MonoBehaviour
 
     private GameObject xAxis;
     private GameObject yAxis;
+    private GameObject xUnitLabel;
+    private GameObject yUnitLabel;
 
     private void Awake()
     {
@@ -20,6 +22,8 @@ public class LineGraphController : MonoBehaviour
         content = viewport.Find("Content") as RectTransform;
         xAxis = this.transform.Find("X Axis").gameObject;
         yAxis = this.transform.Find("Y Axis").gameObject;
+        xUnitLabel = this.transform.Find("X Unit Label").gameObject;
+        yUnitLabel = this.transform.Find("Y Unit Label").gameObject;
     }
 
     private void Start()
@@ -44,5 +48,16 @@ public class LineGraphController : MonoBehaviour
             new Vector2(viewport.rect.width, xAxisTransform.sizeDelta.y);
         yAxisTransform.sizeDelta =
             new Vector2(viewport.rect.height, yAxisTransform.sizeDelta.y);
+
+        RectTransform rectTransform = this.transform as RectTransform;
+        Vector2 xPadding = new Vector2(-5, 5);
+        Vector2 yPadding = new Vector2(5, -5);
+        Vector2 rightBottom =
+            new Vector2(rectTransform.sizeDelta.x, 0) + xPadding;
+        Vector2 leftTop =
+            new Vector2(0, rectTransform.sizeDelta.y) + yPadding;
+
+        ((RectTransform)xUnitLabel.transform).localPosition = rightBottom;
+        ((RectTransform)yUnitLabel.transform).localPosition = leftTop;
     }
 }
