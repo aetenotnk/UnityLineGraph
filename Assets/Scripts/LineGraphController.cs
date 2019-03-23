@@ -7,6 +7,8 @@ public class LineGraphController : MonoBehaviour
 {
     [SerializeField]
     private Sprite dotSprite;
+    [SerializeField]
+    private Font font;
 
     // グラフを表示する範囲
     private RectTransform viewport;
@@ -63,6 +65,8 @@ public class LineGraphController : MonoBehaviour
                         rectTransform1.anchoredPosition,
                         rectTransform2.anchoredPosition);
             }
+
+            CreateValueLabelByDot(i, value);
 
             previousDot = dot;
         }
@@ -151,5 +155,31 @@ public class LineGraphController : MonoBehaviour
         rectTransform.sizeDelta = new Vector2(distance, 2);
         rectTransform.localEulerAngles = new Vector3(0, 0, angle);
         rectTransform.anchoredPosition = pos1 + dir * distance * 0.5f;
+    }
+
+    /// <summary>
+    /// 点の近くに値のラベルを表示する
+    /// </summary>
+    /// <param name="index">X軸方向で何個目か</param>
+    /// <param name="value">Y軸方向の値</param>
+    private void CreateValueLabelByDot(int index, int value)
+    {
+        GameObject label = new GameObject("label", typeof(Text));
+        Text text = label.GetComponent<Text>();
+        text.text = value.ToString();
+        text.alignment = TextAnchor.MiddleCenter;
+        text.verticalOverflow = VerticalWrapMode.Overflow;
+        text.horizontalOverflow = HorizontalWrapMode.Overflow;
+        text.fontSize = 10;
+        text.font = font;
+        text.color = Color.black;
+        Vector2 offset = new Vector2(0, 8);
+        RectTransform rectTransform = label.GetComponent<RectTransform>();
+        rectTransform.SetParent(content);
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.zero;
+        rectTransform.localScale = Vector2.one;
+        rectTransform.anchoredPosition =
+            new Vector2((index + 1) * xSize, value * ySize) + offset;
     }
 }
