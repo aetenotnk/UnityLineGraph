@@ -5,16 +5,25 @@ using UnityEngine.UI;
 
 public class LineGraphController : MonoBehaviour
 {
+    [SerializeField]
+    private Sprite dotSprite;
+
     // グラフを表示する範囲
     private RectTransform viewport;
     // グラフの要素を配置するContent
     // グラフの要素はグラフの点、ライン
     private RectTransform content;
 
+    // 軸のGameObject
     private GameObject xAxis;
     private GameObject yAxis;
     private GameObject xUnitLabel;
     private GameObject yUnitLabel;
+
+    private float xSize = 10;
+    private float ySize = 5;
+
+    List<KeyValuePair<string, int>> valueList;
 
     private void Awake()
     {
@@ -24,11 +33,34 @@ public class LineGraphController : MonoBehaviour
         yAxis = this.transform.Find("Y Axis").gameObject;
         xUnitLabel = this.transform.Find("X Unit Label").gameObject;
         yUnitLabel = this.transform.Find("Y Unit Label").gameObject;
+        valueList = new List<KeyValuePair<string, int>>()
+        {
+            new KeyValuePair<string, int>("1", 5),
+            new KeyValuePair<string, int>("2", 10),
+            new KeyValuePair<string, int>("3", 7),
+            new KeyValuePair<string, int>("4", 1),
+            new KeyValuePair<string, int>("5", 20)
+        };
     }
 
     private void Start()
     {
         InitializeAxis();
+        for(int i = 0;i < valueList.Count; i++)
+        {
+            int value = valueList[i].Value;
+            CreateNewDot(i, value);
+        }
+    }
+
+    /// <summary>
+    /// 値を追加する
+    /// </summary>
+    /// <param name="label">ラベルの文字列</param>
+    /// <param name="value">値</param>
+    public void AddValue(string label, int value)
+    {
+        valueList.Add(new KeyValuePair<string, int>(label, value));
     }
 
     /// <summary>
@@ -59,5 +91,29 @@ public class LineGraphController : MonoBehaviour
 
         ((RectTransform)xUnitLabel.transform).localPosition = rightBottom;
         ((RectTransform)yUnitLabel.transform).localPosition = leftTop;
+    }
+
+    /// <summary>
+    /// 新しい点を作成する
+    /// </summary>
+    /// <returns>The new dot.</returns>
+    /// <param name="index">X軸方向で何個目か</param>
+    /// <param name="value">Y軸方向の値</param>
+    private GameObject CreateNewDot(int index, int value)
+    {
+        GameObject dot = new GameObject("dot", typeof(Image));
+        Image image = dot.GetComponent<Image>();
+        image.useSpriteMesh = true;
+        image.sprite = dotSprite;
+        RectTransform rectTransform = dot.GetComponent<RectTransform>();
+        rectTransform.SetParent(content);
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.zero;
+        rectTransform.localScale = Vector2.one;
+        rectTransform.sizeDelta = new Vector2(5, 5);
+        rectTransform.anchoredPosition =
+            new Vector2((index + 1) * xSize, value * ySize);
+
+        return dot;
     }
 }
