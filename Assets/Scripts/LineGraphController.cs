@@ -22,8 +22,9 @@ public class LineGraphController : MonoBehaviour
 
     private float xSize = 10;
     private float ySize = 5;
+    private GameObject previousDot;
 
-    List<KeyValuePair<string, int>> valueList;
+    private List<KeyValuePair<string, int>> valueList;
 
     private void Awake()
     {
@@ -49,7 +50,21 @@ public class LineGraphController : MonoBehaviour
         for(int i = 0;i < valueList.Count; i++)
         {
             int value = valueList[i].Value;
-            CreateNewDot(i, value);
+            GameObject dot = CreateNewDot(i, value);
+
+            if (previousDot)
+            {
+                RectTransform rectTransform1 =
+                    previousDot.GetComponent<RectTransform>();
+                RectTransform rectTransform2 =
+                    dot.GetComponent<RectTransform>();
+
+                CreateConnection(
+                        rectTransform1.anchoredPosition,
+                        rectTransform2.anchoredPosition);
+            }
+
+            previousDot = dot;
         }
     }
 
@@ -115,5 +130,26 @@ public class LineGraphController : MonoBehaviour
             new Vector2((index + 1) * xSize, value * ySize);
 
         return dot;
+    }
+
+    /// <summary>
+    /// 点と点をつなぐ線を作成する
+    /// </summary>
+    /// <param name="pos1">点1の位置</param>
+    /// <param name="pos2">点2の位置</param>
+    private void CreateConnection(Vector2 pos1, Vector2 pos2)
+    {
+        GameObject connection = new GameObject("connection", typeof(Image));
+        RectTransform rectTransform = connection.GetComponent<RectTransform>();
+        rectTransform.SetParent(content);
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.zero;
+        rectTransform.localScale = Vector2.one;
+        Vector2 dir = (pos2 - pos1).normalized;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        float distance = Vector2.Distance(pos1, pos2);
+        rectTransform.sizeDelta = new Vector2(distance, 2);
+        rectTransform.localEulerAngles = new Vector3(0, 0, angle);
+        rectTransform.anchoredPosition = pos1 + dir * distance * 0.5f;
     }
 }
