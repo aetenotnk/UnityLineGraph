@@ -74,6 +74,7 @@ public class LineGraphController : MonoBehaviour
             }
 
             CreateValueLabelByDot(i, value);
+            CreateXLabel(i, valueList[i].Key);
 
             previousDot = dot;
         }
@@ -191,5 +192,33 @@ public class LineGraphController : MonoBehaviour
         rectTransform.anchoredPosition =
             new Vector2((index + 1) * xSize, value * ySize) + offset;
         rectTransform.SetSiblingIndex((int)ZOrder.LABEL);
+    }
+
+    /// <summary>
+    /// X軸方向のラベルを作成する
+    /// </summary>
+    /// <param name="index">X軸方向で何個目か</param>
+    /// <param name="labelText">表示するラベルのテキスト</param>
+    private void CreateXLabel(int index, string labelText)
+    {
+        GameObject label = new GameObject("xLabel", typeof(Text));
+        Text text = label.GetComponent<Text>();
+        text.text = labelText;
+        text.alignment = TextAnchor.UpperCenter;
+        text.verticalOverflow = VerticalWrapMode.Overflow;
+        text.horizontalOverflow = HorizontalWrapMode.Overflow;
+        text.fontSize = 10;
+        text.font = font;
+        text.color = Color.black;
+        Vector2 origin = xAxis.GetComponent<RectTransform>().anchoredPosition;
+        Vector2 offset = new Vector2(0, -5);
+        RectTransform rectTransform = label.GetComponent<RectTransform>();
+        rectTransform.SetParent(this.transform);
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.zero;
+        rectTransform.localScale = Vector2.one;
+        rectTransform.sizeDelta = Vector2.zero;
+        rectTransform.anchoredPosition =
+                origin + new Vector2((index + 1) * xSize, 0) + offset;
     }
 }
