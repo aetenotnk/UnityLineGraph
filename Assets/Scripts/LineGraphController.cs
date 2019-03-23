@@ -28,6 +28,13 @@ public class LineGraphController : MonoBehaviour
 
     private List<KeyValuePair<string, int>> valueList;
 
+    private enum ZOrder
+    {
+        CONNECTION,
+        DOT,
+        LABEL
+    };
+
     private void Awake()
     {
         viewport = this.transform.Find("Viewport") as RectTransform;
@@ -132,6 +139,7 @@ public class LineGraphController : MonoBehaviour
         rectTransform.sizeDelta = new Vector2(5, 5);
         rectTransform.anchoredPosition =
             new Vector2((index + 1) * xSize, value * ySize);
+        rectTransform.SetSiblingIndex((int)ZOrder.DOT);
 
         return dot;
     }
@@ -155,6 +163,7 @@ public class LineGraphController : MonoBehaviour
         rectTransform.sizeDelta = new Vector2(distance, 2);
         rectTransform.localEulerAngles = new Vector3(0, 0, angle);
         rectTransform.anchoredPosition = pos1 + dir * distance * 0.5f;
+        rectTransform.SetSiblingIndex((int)ZOrder.CONNECTION);
     }
 
     /// <summary>
@@ -181,5 +190,6 @@ public class LineGraphController : MonoBehaviour
         rectTransform.localScale = Vector2.one;
         rectTransform.anchoredPosition =
             new Vector2((index + 1) * xSize, value * ySize) + offset;
+        rectTransform.SetSiblingIndex((int)ZOrder.LABEL);
     }
 }
