@@ -272,7 +272,7 @@ public class LineGraphController : MonoBehaviour
     /// <summary>
     /// X軸の外にあるラベルを非表示にする
     /// </summary>
-    /// <param name="diffPosition">元の一からどれだけずれているか</param>
+    /// <param name="diffPosition">元のからどれだけずれているか</param>
     private void FixXLabelPosition(Vector2 diffPosition)
     {
         RectTransform xAxisRect = xAxis.GetComponent<RectTransform>();
@@ -306,6 +306,10 @@ public class LineGraphController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Y軸のセパレータを作成する
+    /// </summary>
+    /// <param name="value">作成するセパレータの値</param>
     private void CreateYAxisSeparator(int value)
     {
         GameObject separator =
@@ -327,6 +331,10 @@ public class LineGraphController : MonoBehaviour
         rectTransform.SetSiblingIndex((int)ZOrder.AXIS_SEPARATOR);
     }
 
+    /// <summary>
+    /// Y軸の外にあるセパレータを非表示にする
+    /// </summary>
+    /// <param name="diffPosition">元の位置からどれだけずれているか</param>
     private void FixYAxisSeparatorPosition(Vector2 diffPosition)
     {
         RectTransform yAxisRect = yAxis.GetComponent<RectTransform>();
