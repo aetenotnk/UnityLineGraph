@@ -381,6 +381,34 @@ public class LineGraphController : MonoBehaviour
         for(int value = 0; value < separatorMax; value += yAxisSeparatorSpan)
         {
             CreateYAxisSeparator(value);
+            CreateYLabel(value);
         }
+    }
+
+    /// <summary>
+    /// Y座標のセパレータのラベルを作成
+    /// </summary>
+    /// <param name="value">Y軸方向の値</param>
+    private void CreateYLabel(int value)
+    {
+        GameObject label = new GameObject("yLabel(" + value + ")", typeof(Text));
+        Text text = label.GetComponent<Text>();
+        text.text = value.ToString();
+        text.alignment = TextAnchor.MiddleRight;
+        text.verticalOverflow = VerticalWrapMode.Overflow;
+        text.horizontalOverflow = HorizontalWrapMode.Overflow;
+        text.fontSize = 10;
+        text.font = font;
+        text.color = Color.black;
+        Vector2 origin = xAxis.GetComponent<RectTransform>().anchoredPosition;
+        Vector2 offset = new Vector2(-5, 0);
+        RectTransform rectTransform = label.GetComponent<RectTransform>();
+        rectTransform.SetParent(this.transform);
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.zero;
+        rectTransform.localScale = Vector2.one;
+        rectTransform.sizeDelta = Vector2.zero;
+        rectTransform.anchoredPosition =
+                origin + new Vector2(0, value * ySize) + offset;
     }
 }
