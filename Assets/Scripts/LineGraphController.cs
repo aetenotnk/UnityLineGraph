@@ -32,6 +32,7 @@ public class LineGraphController : MonoBehaviour
 
     private enum ZOrder
     {
+        AXIS_SEPARATOR,
         CONNECTION,
         DOT,
         LABEL
@@ -57,6 +58,7 @@ public class LineGraphController : MonoBehaviour
 
     private void Start()
     {
+        FixContentSize();
         InitializeAxis();
         for(int i = 0;i < valueList.Count; i++)
         {
@@ -80,7 +82,11 @@ public class LineGraphController : MonoBehaviour
 
             previousDot = dot;
         }
-        FixContentSize();
+
+        CreateYAxisSeparator(10);
+        CreateYAxisSeparator(20);
+        CreateYAxisSeparator(30);
+        CreateYAxisSeparator(40);
     }
 
     /// <summary>
@@ -306,5 +312,26 @@ public class LineGraphController : MonoBehaviour
                         position.x <= xLimit.x);
             }
         }
+    }
+
+    private void CreateYAxisSeparator(int value)
+    {
+        GameObject separator =
+            new GameObject("separator(" + value + ")", typeof(Image));
+        Image image = separator.GetComponent<Image>();
+        image.color = new Color(0, 0, 0, 0.5f);
+        RectTransform rectTransform =
+            separator.GetComponent<RectTransform>();
+        rectTransform.SetParent(this.transform);
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.zero;
+        rectTransform.localScale = Vector2.one;
+        float width = ((RectTransform)xAxis.transform).sizeDelta.x;
+        rectTransform.sizeDelta = new Vector2(width, 2);
+        Vector2 origin =
+            ((RectTransform)xAxis.transform).anchoredPosition;
+        rectTransform.anchoredPosition = (origin +
+                new Vector2(width / 2.0f, value * ySize));
+        rectTransform.SetSiblingIndex((int)ZOrder.AXIS_SEPARATOR);
     }
 }
