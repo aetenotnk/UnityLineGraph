@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -78,6 +80,7 @@ public class LineGraphController : MonoBehaviour
 
             previousDot = dot;
         }
+        FixContentSize();
     }
 
     /// <summary>
@@ -88,6 +91,24 @@ public class LineGraphController : MonoBehaviour
     public void AddValue(string label, int value)
     {
         valueList.Add(new KeyValuePair<string, int>(label, value));
+    }
+
+    /// <summary>
+    /// グラフがスクロールされた時の処理
+    /// </summary>
+    /// <param name="scrollPosition">スクロールの位置</param>
+    public void OnGraphScroll(Vector2 scrollPosition)
+    {
+        Vector2 contentSize = content.sizeDelta;
+        Vector2 viewportSize =
+            new Vector2(viewport.rect.width, viewport.rect.height);
+        Vector2 maxScrollSize = contentSize - viewportSize;
+        Vector2 scroll =
+            new Vector2(
+                    maxScrollSize.x * scrollPosition.x,
+                    maxScrollSize.y * scrollPosition.y);
+
+        FixXLabelPosition(new Vector2(content.anchoredPosition.x, 0));
     }
 
     /// <summary>
@@ -195,13 +216,41 @@ public class LineGraphController : MonoBehaviour
     }
 
     /// <summary>
+    /// Contentのサイズを調整する
+    /// </summary>
+    private void FixContentSize()
+    {
+        Vector2 buffer = new Vector2(10, 10);
+        float width = (valueList.Count + 1) * xSize;
+        float height = GetMaxValue() * ySize;
+
+        content.sizeDelta = new Vector2(width, height) + buffer;
+    }
+
+    /// <summary>
+    /// 現在の最大値を取得する
+    /// </summary>
+    /// <returns>最大値</returns>
+    private int GetMaxValue()
+    {
+        int max = int.MinValue;
+
+        foreach(KeyValuePair<string, int>pair in valueList)
+        {
+            max = max < pair.Value ? pair.Value : max;
+        }
+
+        return max;
+    }
+
+    /// <summary>
     /// X軸方向のラベルを作成する
     /// </summary>
     /// <param name="index">X軸方向で何個目か</param>
     /// <param name="labelText">表示するラベルのテキスト</param>
     private void CreateXLabel(int index, string labelText)
     {
-        GameObject label = new GameObject("xLabel", typeof(Text));
+        GameObject label = new GameObject("xLabel(" + index + ")", typeof(Text));
         Text text = label.GetComponent<Text>();
         text.text = labelText;
         text.alignment = TextAnchor.UpperCenter;
@@ -220,5 +269,42 @@ public class LineGraphController : MonoBehaviour
         rectTransform.sizeDelta = Vector2.zero;
         rectTransform.anchoredPosition =
                 origin + new Vector2((index + 1) * xSize, 0) + offset;
+    }
+
+    /// <summary>
+    /// X軸の外にあるラベルを非表示にする
+    /// </summary>
+    /// <param name="diffPosition">元の一からどれだけずれているか</param>
+    private void FixXLabelPosition(Vector2 diffPosition)
+    {
+        RectTransform xAxisRect = xAxis.GetComponent<RectTransform>();
+        Vector2 origin = xAxisRect.anchoredPosition;
+        Vector2 xLimit = origin + new Vector2(xAxisRect.sizeDelta.x, 0);
+
+        for(int i = 0;i < this.transform.childCount; i++)
+        {
+            RectTransform child = this.transform.GetChild(i) as RectTransform;
+
+            if(child == null)
+            {
+                continue;
+            }
+
+            Match match = Regex.Match(child.name, "^xLabel\\(([0-9]+)\\)$");
+
+            if (match.Groups.Count > 1)
+            {
+                int index = int.Parse(match.Groups[1].Value);
+                float x = origin.x + (index + 1) * xSize;
+                float y = child.anchoredPosition.y;
+                Vector2 basePosition = new Vector2(x, y);
+                Vector2 position = basePosition + diffPosition;
+
+                child.anchoredPosition = position;
+                child.gameObject.SetActive(
+                        origin.x <= position.x &&
+                        position.x <= xLimit.x);
+            }
+        }
     }
 }
