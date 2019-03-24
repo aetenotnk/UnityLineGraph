@@ -105,6 +105,7 @@ public class LineGraphController : MonoBehaviour
     {
         FixXLabelPosition(new Vector2(content.anchoredPosition.x, 0));
         FixYAxisSeparatorPosition(new Vector2(0, content.anchoredPosition.y));
+        FixYLabelPosition(new Vector2(0, content.anchoredPosition.y));
     }
 
     /// <summary>
@@ -410,5 +411,42 @@ public class LineGraphController : MonoBehaviour
         rectTransform.sizeDelta = Vector2.zero;
         rectTransform.anchoredPosition =
                 origin + new Vector2(0, value * ySize) + offset;
+    }
+
+    /// <summary>
+    /// Y軸の外にあるラベルを非表示にする
+    /// </summary>
+    /// <param name="diffPosition">元の位置からどれだけずれているか</param>
+    private void FixYLabelPosition(Vector2 diffPosition)
+    {
+        RectTransform yAxisRect = yAxis.GetComponent<RectTransform>();
+        Vector2 origin = yAxisRect.anchoredPosition;
+        Vector2 yLimit = origin + new Vector2(0, yAxisRect.sizeDelta.x);
+
+        for (int i = 0; i < this.transform.childCount; i++)
+        {
+            RectTransform child = this.transform.GetChild(i) as RectTransform;
+
+            if (child == null)
+            {
+                continue;
+            }
+
+            Match match = Regex.Match(child.name, "^yLabel\\(([0-9]+)\\)$");
+
+            if (match.Groups.Count > 1)
+            {
+                int value = int.Parse(match.Groups[1].Value);
+                float x = child.anchoredPosition.x;
+                float y = origin.y + value * ySize;
+                Vector2 basePosition = new Vector2(x, y);
+                Vector2 position = basePosition + diffPosition;
+
+                child.anchoredPosition = position;
+                child.gameObject.SetActive(
+                        origin.y <= position.y &&
+                        position.y <= yLimit.y);
+            }
+        }
     }
 }
