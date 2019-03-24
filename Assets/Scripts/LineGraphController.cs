@@ -105,16 +105,8 @@ public class LineGraphController : MonoBehaviour
     /// <param name="scrollPosition">スクロールの位置</param>
     public void OnGraphScroll(Vector2 scrollPosition)
     {
-        Vector2 contentSize = content.sizeDelta;
-        Vector2 viewportSize =
-            new Vector2(viewport.rect.width, viewport.rect.height);
-        Vector2 maxScrollSize = contentSize - viewportSize;
-        Vector2 scroll =
-            new Vector2(
-                    maxScrollSize.x * scrollPosition.x,
-                    maxScrollSize.y * scrollPosition.y);
-
         FixXLabelPosition(new Vector2(content.anchoredPosition.x, 0));
+        FixYAxisSeparatorPosition(new Vector2(0, content.anchoredPosition.y));
     }
 
     /// <summary>
@@ -317,7 +309,7 @@ public class LineGraphController : MonoBehaviour
     private void CreateYAxisSeparator(int value)
     {
         GameObject separator =
-            new GameObject("separator(" + value + ")", typeof(Image));
+            new GameObject("ySeparator(" + value + ")", typeof(Image));
         Image image = separator.GetComponent<Image>();
         image.color = new Color(0, 0, 0, 0.5f);
         RectTransform rectTransform =
@@ -333,5 +325,38 @@ public class LineGraphController : MonoBehaviour
         rectTransform.anchoredPosition = (origin +
                 new Vector2(width / 2.0f, value * ySize));
         rectTransform.SetSiblingIndex((int)ZOrder.AXIS_SEPARATOR);
+    }
+
+    private void FixYAxisSeparatorPosition(Vector2 diffPosition)
+    {
+        RectTransform yAxisRect = yAxis.GetComponent<RectTransform>();
+        Vector2 origin = yAxisRect.anchoredPosition;
+        Vector2 yLimit = origin + new Vector2(0, yAxisRect.sizeDelta.x);
+
+        for (int i = 0; i < this.transform.childCount; i++)
+        {
+            RectTransform child = this.transform.GetChild(i) as RectTransform;
+
+            if (child == null)
+            {
+                continue;
+            }
+
+            Match match = Regex.Match(child.name, "^ySeparator\\(([0-9]+)\\)$");
+
+            if (match.Groups.Count > 1)
+            {
+                int value = int.Parse(match.Groups[1].Value);
+                float x = child.anchoredPosition.x;
+                float y = origin.y + value * ySize;
+                Vector2 basePosition = new Vector2(x, y);
+                Vector2 position = basePosition + diffPosition;
+
+                child.anchoredPosition = position;
+                child.gameObject.SetActive(
+                        origin.y <= position.y &&
+                        position.y <= yLimit.y);
+            }
+        }
     }
 }
