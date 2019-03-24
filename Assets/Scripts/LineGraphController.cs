@@ -24,8 +24,9 @@ public class LineGraphController : MonoBehaviour
     private GameObject xUnitLabel;
     private GameObject yUnitLabel;
 
-    private float xSize = 10;
+    private float xSize = 50;
     private float ySize = 5;
+    private int yAxisSeparatorSpan = 10;
     private GameObject previousDot;
 
     private List<KeyValuePair<string, int>> valueList;
@@ -83,10 +84,7 @@ public class LineGraphController : MonoBehaviour
             previousDot = dot;
         }
 
-        CreateYAxisSeparator(10);
-        CreateYAxisSeparator(20);
-        CreateYAxisSeparator(30);
-        CreateYAxisSeparator(40);
+        CreateYAxisSeparatorFitGraph();
     }
 
     /// <summary>
@@ -272,7 +270,7 @@ public class LineGraphController : MonoBehaviour
     /// <summary>
     /// X軸の外にあるラベルを非表示にする
     /// </summary>
-    /// <param name="diffPosition">元のからどれだけずれているか</param>
+    /// <param name="diffPosition">元の位置からどれだけずれているか</param>
     private void FixXLabelPosition(Vector2 diffPosition)
     {
         RectTransform xAxisRect = xAxis.GetComponent<RectTransform>();
@@ -365,6 +363,24 @@ public class LineGraphController : MonoBehaviour
                         origin.y <= position.y &&
                         position.y <= yLimit.y);
             }
+        }
+    }
+
+    /// <summary>
+    /// Y軸のセパレータを今のグラフに合わせて表示する
+    /// </summary>
+    private void CreateYAxisSeparatorFitGraph()
+    {
+        RectTransform yAxisRect = yAxis.GetComponent<RectTransform>();
+        float height = yAxisRect.sizeDelta.x;
+        // スクロールしていない時に表示できるY軸方向の最大値
+        int maxValueNotScroll = (int)(height / ySize);
+        int maxValue = GetMaxValue();
+        int separatorMax = Mathf.Max(maxValue, maxValueNotScroll);
+
+        for(int value = 0; value < separatorMax; value += yAxisSeparatorSpan)
+        {
+            CreateYAxisSeparator(value);
         }
     }
 }
