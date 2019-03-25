@@ -6,10 +6,18 @@ public class Sample : MonoBehaviour
 {
     LineGraphController lineGraph;
     List<int> valueList;
+    LineGraphController.LineGraphParameter parameter;
 
     void Start()
     {
         lineGraph = GameObject.Find("LineGraph").GetComponent<LineGraphController>();
+
+        parameter.xSize = 50;
+        parameter.ySize = 5;
+        parameter.yAxisSeparatorSpan = 10;
+        parameter.valueSpan = 1;
+
+        lineGraph.ChangeParam(parameter);
 
         valueList = new List<int>()
         {
@@ -35,22 +43,38 @@ public class Sample : MonoBehaviour
             lineGraph.AddValue(valueList.Count.ToString(), value);
         }
 
-        // xSize: 50, ySize: 5, yAxisSeparatorSpan: 10, xValueSpan: 1
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            lineGraph.ChangeParam(10, 5, 10, 1);
+            parameter = lineGraph.GetParameter();
+            parameter.xSize = 10;
+            lineGraph.ChangeParam(parameter);
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
-            lineGraph.ChangeParam(50, 1, 10, 1);
+            parameter = lineGraph.GetParameter();
+            parameter.ySize = 1;
+            lineGraph.ChangeParam(parameter);
         }
         if (Input.GetKeyDown(KeyCode.C))
         {
-            lineGraph.ChangeParam(50, 5, 50, 1);
+            parameter = lineGraph.GetParameter();
+            parameter.yAxisSeparatorSpan = 50;
+            lineGraph.ChangeParam(parameter);
         }
         if (Input.GetKeyDown(KeyCode.V))
         {
-            lineGraph.ChangeParam(50, 5, 10, 5);
+            parameter = lineGraph.GetParameter();
+            parameter.valueSpan = 5;
+            lineGraph.ChangeParam(parameter);
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            parameter = lineGraph.GetParameter();
+            parameter.xSize = 50;
+            parameter.ySize = 5;
+            parameter.yAxisSeparatorSpan = 10;
+            parameter.valueSpan = 1;
+            lineGraph.ChangeParam(parameter);
         }
     }
 }
