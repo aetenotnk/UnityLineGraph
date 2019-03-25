@@ -34,6 +34,8 @@ public class LineGraphController : MonoBehaviour
         public float ySize;
         public int yAxisSeparatorSpan;
         public int valueSpan;
+        public Color dotColor;
+        public Color connectionColor;
     }
 
     private enum ZOrder
@@ -58,7 +60,9 @@ public class LineGraphController : MonoBehaviour
             xSize = 50,
             ySize = 5,
             yAxisSeparatorSpan = 10,
-            valueSpan = 1
+            valueSpan = 1,
+            dotColor = Color.white,
+            connectionColor =  Color.white
         };
     }
 
@@ -212,6 +216,7 @@ public class LineGraphController : MonoBehaviour
         Image image = dot.GetComponent<Image>();
         image.useSpriteMesh = true;
         image.sprite = dotSprite;
+        image.color = parameter.dotColor;
         RectTransform rectTransform = dot.GetComponent<RectTransform>();
         rectTransform.SetParent(content);
         rectTransform.anchorMin = Vector2.zero;
@@ -234,6 +239,7 @@ public class LineGraphController : MonoBehaviour
     private void CreateConnection(Vector2 pos1, Vector2 pos2)
     {
         GameObject connection = new GameObject("connection", typeof(Image));
+        connection.GetComponent<Image>().color = parameter.connectionColor;
         RectTransform rectTransform = connection.GetComponent<RectTransform>();
         rectTransform.SetParent(content);
         rectTransform.anchorMin = Vector2.zero;

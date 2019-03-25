@@ -16,6 +16,8 @@ public class Sample : MonoBehaviour
         parameter.ySize = 5;
         parameter.yAxisSeparatorSpan = 10;
         parameter.valueSpan = 1;
+        parameter.dotColor = Color.white;
+        parameter.connectionColor = Color.white;
 
         lineGraph.ChangeParam(parameter);
 
@@ -45,31 +47,34 @@ public class Sample : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            parameter = lineGraph.GetParameter();
             parameter.xSize = 10;
             lineGraph.ChangeParam(parameter);
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
-            parameter = lineGraph.GetParameter();
             parameter.ySize = 1;
             lineGraph.ChangeParam(parameter);
         }
         if (Input.GetKeyDown(KeyCode.C))
         {
-            parameter = lineGraph.GetParameter();
             parameter.yAxisSeparatorSpan = 50;
             lineGraph.ChangeParam(parameter);
         }
         if (Input.GetKeyDown(KeyCode.V))
         {
-            parameter = lineGraph.GetParameter();
             parameter.valueSpan = 5;
+            lineGraph.ChangeParam(parameter);
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            Color blue = Color.blue;
+            parameter.dotColor = blue;
+            blue.a = 0.5f;
+            parameter.connectionColor = blue;
             lineGraph.ChangeParam(parameter);
         }
         if (Input.GetKeyDown(KeyCode.A))
         {
-            parameter = lineGraph.GetParameter();
             parameter.xSize = 50;
             parameter.ySize = 5;
             parameter.yAxisSeparatorSpan = 10;
