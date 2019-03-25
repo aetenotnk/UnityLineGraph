@@ -12,12 +12,7 @@ public class Sample : MonoBehaviour
     {
         lineGraph = GameObject.Find("LineGraph").GetComponent<LineGraphController>();
 
-        parameter.xSize = 50;
-        parameter.ySize = 5;
-        parameter.yAxisSeparatorSpan = 10;
-        parameter.valueSpan = 1;
-        parameter.dotColor = Color.white;
-        parameter.connectionColor = Color.white;
+        parameter = LineGraphController.LineGraphParameter.Default;
 
         lineGraph.ChangeParam(parameter);
 
@@ -75,10 +70,7 @@ public class Sample : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.A))
         {
-            parameter.xSize = 50;
-            parameter.ySize = 5;
-            parameter.yAxisSeparatorSpan = 10;
-            parameter.valueSpan = 1;
+            parameter = LineGraphController.LineGraphParameter.Default;
             lineGraph.ChangeParam(parameter);
         }
     }

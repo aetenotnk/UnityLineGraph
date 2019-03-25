@@ -36,6 +36,22 @@ public class LineGraphController : MonoBehaviour
         public int valueSpan;
         public Color dotColor;
         public Color connectionColor;
+
+        public static LineGraphParameter Default
+        {
+            get
+            {
+                return new LineGraphParameter()
+                {
+                    xSize = 50,
+                    ySize = 5,
+                    yAxisSeparatorSpan = 10,
+                    valueSpan = 1,
+                    dotColor = Color.white,
+                    connectionColor = Color.white
+                };
+            }
+        }
     }
 
     private enum ZOrder
@@ -55,15 +71,7 @@ public class LineGraphController : MonoBehaviour
         xUnitLabel = this.transform.Find("X Unit Label").gameObject;
         yUnitLabel = this.transform.Find("Y Unit Label").gameObject;
         valueList = new List<KeyValuePair<string, int>>();
-        parameter = new LineGraphParameter()
-        {
-            xSize = 50,
-            ySize = 5,
-            yAxisSeparatorSpan = 10,
-            valueSpan = 1,
-            dotColor = Color.white,
-            connectionColor =  Color.white
-        };
+        parameter = LineGraphParameter.Default;
     }
 
     private void Start()
