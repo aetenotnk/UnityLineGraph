@@ -99,6 +99,24 @@ public class LineGraphController : MonoBehaviour
     }
 
     /// <summary>
+    /// X軸方向の単位を設定
+    /// </summary>
+    /// <param name="text">Text.</param>
+    public void SetXUnitText(string text)
+    {
+        xUnitLabel.GetComponent<Text>().text = text;
+    }
+
+    /// <summary>
+    /// Y軸方向の単位を設定
+    /// </summary>
+    /// <param name="text">Text.</param>
+    public void SetYUnitText(string text)
+    {
+        yUnitLabel.GetComponent<Text>().text = text;
+    }
+
+    /// <summary>
     /// グラフがスクロールされた時の処理
     /// </summary>
     /// <param name="scrollPosition">スクロールの位置</param>

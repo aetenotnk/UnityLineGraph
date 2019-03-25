@@ -20,6 +20,9 @@ public class Sample : MonoBehaviour
         {
             lineGraph.AddValue((i + 1).ToString(), valueList[i]);
         }
+
+        lineGraph.SetXUnitText("時間(s)");
+        lineGraph.SetYUnitText("個体数");
     }
 
     void Update()
