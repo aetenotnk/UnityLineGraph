@@ -348,6 +348,9 @@ public class LineGraphController : MonoBehaviour
                 origin + new Vector2(0, value * ySize) + offset;
     }
 
+    /// <summary>
+    /// グラフ外のラベルと軸セパレータの位置を更新
+    /// </summary>
     private void FixLabelAndAxisSeparatorPosition()
     {
         RectTransform xAxisRect = xAxis.GetComponent<RectTransform>();
