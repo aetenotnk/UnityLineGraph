@@ -282,7 +282,7 @@ public class LineGraphController : MonoBehaviour
     private void FixContentSize()
     {
         Vector2 buffer = new Vector2(10, 10);
-        float width = (valueList.Count + 1) * parameter.xSize;
+        float width = (valueList.Count / parameter.valueSpan + 1) * parameter.xSize;
         float height = GetMaxValue() * parameter.ySize;
 
         content.sizeDelta = new Vector2(width, height) + buffer;
@@ -301,9 +301,9 @@ public class LineGraphController : MonoBehaviour
             return 0;
         }
 
-        foreach (KeyValuePair<string, int>pair in valueList)
+        for(int i = 0;i < valueList.Count; i += parameter.valueSpan)
         {
-            max = max < pair.Value ? pair.Value : max;
+            max = Mathf.Max(max, valueList[i].Value);
         }
 
         return max;
