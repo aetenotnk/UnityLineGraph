@@ -53,7 +53,8 @@ public class LineGraphController : MonoBehaviour
             new KeyValuePair<string, int>("2", 10),
             new KeyValuePair<string, int>("3", 7),
             new KeyValuePair<string, int>("4", 1),
-            new KeyValuePair<string, int>("5", 20)
+            new KeyValuePair<string, int>("5", 20),
+            new KeyValuePair<string, int>("6", 100)
         };
     }
 
@@ -85,6 +86,7 @@ public class LineGraphController : MonoBehaviour
         }
 
         CreateYAxisSeparatorFitGraph();
+        FixLabelAndAxisSeparatorPosition();
     }
 
     /// <summary>
@@ -303,7 +305,7 @@ public class LineGraphController : MonoBehaviour
         int maxValue = GetMaxValue();
         int separatorMax = Mathf.Max(maxValue, maxValueNotScroll);
 
-        for(int value = 0; value < separatorMax; value += yAxisSeparatorSpan)
+        for(int value = 0; value <= separatorMax; value += yAxisSeparatorSpan)
         {
             CreateYAxisSeparator(value);
             CreateYLabel(value);
