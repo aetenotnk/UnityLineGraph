@@ -27,6 +27,8 @@ public class LineGraphController : MonoBehaviour
     private float xSize = 50;
     private float ySize = 5;
     private int yAxisSeparatorSpan = 10;
+    // どの間隔で点をプロットするか
+    private int valueSpan = 1;
     private GameObject previousDot;
 
     private List<KeyValuePair<string, int>> valueList;
@@ -47,44 +49,12 @@ public class LineGraphController : MonoBehaviour
         yAxis = this.transform.Find("Y Axis").gameObject;
         xUnitLabel = this.transform.Find("X Unit Label").gameObject;
         yUnitLabel = this.transform.Find("Y Unit Label").gameObject;
-        valueList = new List<KeyValuePair<string, int>>()
-        {
-            new KeyValuePair<string, int>("1", 5),
-            new KeyValuePair<string, int>("2", 10),
-            new KeyValuePair<string, int>("3", 7),
-            new KeyValuePair<string, int>("4", 1),
-            new KeyValuePair<string, int>("5", 20),
-            new KeyValuePair<string, int>("6", 100)
-        };
+        valueList = new List<KeyValuePair<string, int>>();
     }
 
     private void Start()
     {
-        FixContentSize();
         InitializeAxis();
-        for(int i = 0;i < valueList.Count; i++)
-        {
-            int value = valueList[i].Value;
-            GameObject dot = CreateNewDot(i, value);
-
-            if (previousDot)
-            {
-                RectTransform rectTransform1 =
-                    previousDot.GetComponent<RectTransform>();
-                RectTransform rectTransform2 =
-                    dot.GetComponent<RectTransform>();
-
-                CreateConnection(
-                        rectTransform1.anchoredPosition,
-                        rectTransform2.anchoredPosition);
-            }
-
-            CreateValueLabelByDot(i, value);
-            CreateXLabel(i, valueList[i].Key);
-
-            previousDot = dot;
-        }
-
         CreateYAxisSeparatorFitGraph();
         FixLabelAndAxisSeparatorPosition();
     }
@@ -97,6 +67,35 @@ public class LineGraphController : MonoBehaviour
     public void AddValue(string label, int value)
     {
         valueList.Add(new KeyValuePair<string, int>(label, value));
+
+        // 点を追加する
+        if(valueSpan == 1 || valueList.Count % valueSpan == 1)
+        {
+            int index = valueList.Count - 1;
+            GameObject dot = CreateNewDot(index, value);
+
+            if(previousDot != null)
+            {
+                RectTransform rectTransform1 =
+                    previousDot.GetComponent<RectTransform>();
+                RectTransform rectTransform2 =
+                    dot.GetComponent<RectTransform>();
+
+                CreateConnection(
+                        rectTransform1.anchoredPosition,
+                        rectTransform2.anchoredPosition);
+            }
+
+            CreateValueLabelByDot(index, value);
+            CreateXLabel(index, label);
+
+            previousDot = dot;
+
+            FixContentSize();
+
+            // Yセパレータの更新
+            CreateYAxisSeparatorFitGraph();
+        }
     }
 
     /// <summary>
@@ -232,7 +231,12 @@ public class LineGraphController : MonoBehaviour
     {
         int max = int.MinValue;
 
-        foreach(KeyValuePair<string, int>pair in valueList)
+        if(valueList.Count == 0)
+        {
+            return 0;
+        }
+
+        foreach (KeyValuePair<string, int>pair in valueList)
         {
             max = max < pair.Value ? pair.Value : max;
         }
@@ -307,6 +311,11 @@ public class LineGraphController : MonoBehaviour
 
         for(int value = 0; value <= separatorMax; value += yAxisSeparatorSpan)
         {
+            string separatorName = "ySeparator(" + value + ")";
+
+            // 存在したら追加しない
+            if (this.transform.Find(separatorName) != null) continue;
+
             CreateYAxisSeparator(value);
             CreateYLabel(value);
         }
