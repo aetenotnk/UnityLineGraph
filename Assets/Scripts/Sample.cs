@@ -34,5 +34,23 @@ public class Sample : MonoBehaviour
             valueList.Add(value);
             lineGraph.AddValue(valueList.Count.ToString(), value);
         }
+
+        // xSize: 50, ySize: 5, yAxisSeparatorSpan: 10, xValueSpan: 1
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            lineGraph.ChangeParam(10, 5, 10, 1);
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            lineGraph.ChangeParam(50, 1, 10, 1);
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            lineGraph.ChangeParam(50, 5, 50, 1);
+        }
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            lineGraph.ChangeParam(50, 5, 10, 5);
+        }
     }
 }

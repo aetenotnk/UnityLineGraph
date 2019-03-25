@@ -95,6 +95,7 @@ public class LineGraphController : MonoBehaviour
 
             // Yセパレータの更新
             CreateYAxisSeparatorFitGraph();
+            FixLabelAndAxisSeparatorPosition();
         }
     }
 
@@ -114,6 +115,23 @@ public class LineGraphController : MonoBehaviour
     public void SetYUnitText(string text)
     {
         yUnitLabel.GetComponent<Text>().text = text;
+    }
+
+    /// <summary>
+    /// グラフに関するパラメータを全て変更する
+    /// </summary>
+    /// <param name="xSize">X軸方向の幅</param>
+    /// <param name="ySize">Y軸方向の幅s</param>
+    /// <param name="yAxisSeparatorSpan">Y軸セパレータの間隔</param>
+    /// <param name="valueSpan">X軸方向の点を表示する間隔</param>
+    public void ChangeParam(float xSize, float ySize, int yAxisSeparatorSpan, int valueSpan)
+    {
+        this.xSize = xSize;
+        this.ySize = ySize;
+        this.yAxisSeparatorSpan = yAxisSeparatorSpan;
+        this.valueSpan = valueSpan;
+
+        RefleshGraph();
     }
 
     /// <summary>
@@ -174,7 +192,7 @@ public class LineGraphController : MonoBehaviour
         rectTransform.localScale = Vector2.one;
         rectTransform.sizeDelta = new Vector2(5, 5);
         rectTransform.anchoredPosition =
-            new Vector2((index + 1) * xSize, value * ySize);
+            new Vector2((index / valueSpan + 1) * xSize, value * ySize);
         rectTransform.SetSiblingIndex((int)ZOrder.DOT);
 
         return dot;
@@ -225,7 +243,7 @@ public class LineGraphController : MonoBehaviour
         rectTransform.anchorMax = Vector2.zero;
         rectTransform.localScale = Vector2.one;
         rectTransform.anchoredPosition =
-            new Vector2((index + 1) * xSize, value * ySize) + offset;
+            new Vector2((index / valueSpan + 1) * xSize, value * ySize) + offset;
         rectTransform.SetSiblingIndex((int)ZOrder.LABEL);
     }
 
@@ -332,7 +350,10 @@ public class LineGraphController : MonoBehaviour
             string separatorName = "ySeparator(" + value + ")";
 
             // 存在したら追加しない
-            if (this.transform.Find(separatorName) != null) continue;
+            if (this.transform.Find(separatorName) != null)
+            {
+                continue;
+            }
 
             CreateYAxisSeparator(value);
             CreateYLabel(value);
@@ -391,7 +412,7 @@ public class LineGraphController : MonoBehaviour
             if (xLabelMatch.Groups.Count > 1)
             {
                 int index = int.Parse(xLabelMatch.Groups[1].Value);
-                float x = origin.x + (index + 1) * xSize;
+                float x = origin.x + (index / valueSpan + 1) * xSize;
                 float y = child.anchoredPosition.y;
                 Vector2 position = new Vector2(x + contentPosition.x, y);
 
@@ -425,5 +446,62 @@ public class LineGraphController : MonoBehaviour
                         position.y <= yLimit);
             }
         }
+    }
+
+    /// <summary>
+    /// グラフの表示を更新する
+    /// </summary>
+    private void RefleshGraph()
+    {
+        for (int i = 0; i < content.childCount; i++)
+        {
+            Destroy(content.GetChild(i).gameObject);
+        }
+
+        for (int i = 0; i < this.transform.childCount; i++)
+        {
+            Transform child = this.transform.GetChild(i);
+            if (Regex.IsMatch(child.name, "^xLabel\\([0-9]+\\)$") ||
+                    Regex.IsMatch(child.name, "^ySeparator\\([0-9]+\\)$") ||
+                    Regex.IsMatch(child.name, "^yLabel\\([0-9]+\\)$"))
+            {
+                // Destroyだと破棄されるまでにラグがあるので
+                // DestroyImmediateを使う
+                DestroyImmediate(child.gameObject);
+                // 親から即座に削除されるのでiを調整
+                i--;
+            }
+        }
+
+        previousDot = null;
+
+        for (int i = 0; i < valueList.Count; i += valueSpan)
+        {
+            string label = valueList[i].Key;
+            int value = valueList[i].Value;
+            GameObject dot = CreateNewDot(i, value);
+
+            if (previousDot != null)
+            {
+                RectTransform rectTransform1 =
+                    previousDot.GetComponent<RectTransform>();
+                RectTransform rectTransform2 =
+                    dot.GetComponent<RectTransform>();
+
+                CreateConnection(
+                        rectTransform1.anchoredPosition,
+                        rectTransform2.anchoredPosition);
+            }
+
+            CreateValueLabelByDot(i, value);
+            CreateXLabel(i, label);
+
+            previousDot = dot;
+        }
+        FixContentSize();
+
+        // Yセパレータの更新
+        CreateYAxisSeparatorFitGraph();
+        FixLabelAndAxisSeparatorPosition();
     }
 }
