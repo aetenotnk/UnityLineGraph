@@ -367,7 +367,7 @@ public class LineGraphController : MonoBehaviour
         rectTransform.anchorMin = Vector2.zero;
         rectTransform.anchorMax = Vector2.zero;
         rectTransform.localScale = Vector2.one;
-        float width = ((RectTransform)xAxis.transform).sizeDelta.x;
+        float width = viewport.rect.width;
         rectTransform.sizeDelta = new Vector2(width, 2);
         Vector2 origin =
             ((RectTransform)xAxis.transform).anchoredPosition;
