@@ -36,6 +36,7 @@ public class LineGraphController : MonoBehaviour
         public int valueSpan;
         public Color dotColor;
         public Color connectionColor;
+        public bool autoScroll;
 
         public static LineGraphParameter Default
         {
@@ -48,7 +49,8 @@ public class LineGraphController : MonoBehaviour
                     yAxisSeparatorSpan = 10,
                     valueSpan = 1,
                     dotColor = Color.white,
-                    connectionColor = Color.white
+                    connectionColor = Color.white,
+                    autoScroll = true
                 };
             }
         }
@@ -118,6 +120,13 @@ public class LineGraphController : MonoBehaviour
             // Yセパレータの更新
             CreateYAxisSeparatorFitGraph();
             FixLabelAndAxisSeparatorPosition();
+
+            if (parameter.autoScroll)
+            {
+                RectTransform rect = dot.GetComponent<RectTransform>();
+
+                CapturePoint(rect.localPosition);
+            }
         }
     }
 
@@ -146,14 +155,16 @@ public class LineGraphController : MonoBehaviour
     /// <param name="ySize">Y軸方向の幅s</param>
     /// <param name="yAxisSeparatorSpan">Y軸セパレータの間隔</param>
     /// <param name="valueSpan">X軸方向の点を表示する間隔</param>
-    public void ChangeParam(float xSize, float ySize, int yAxisSeparatorSpan, int valueSpan)
+    /// <param name="autoScroll">自動的にスクロールするか</param>
+    public void ChangeParam(float xSize, float ySize, int yAxisSeparatorSpan, int valueSpan, bool autoScroll)
     {
         ChangeParam(new LineGraphParameter()
         {
             xSize = xSize,
             ySize = ySize,
             yAxisSeparatorSpan = yAxisSeparatorSpan,
-            valueSpan = valueSpan
+            valueSpan = valueSpan,
+            autoScroll = autoScroll
         });
     }
 
@@ -546,5 +557,23 @@ public class LineGraphController : MonoBehaviour
         // Yセパレータの更新
         CreateYAxisSeparatorFitGraph();
         FixLabelAndAxisSeparatorPosition();
+    }
+
+    /// <summary>
+    /// ある点をグラフの中央になるようにスクロールする
+    /// </summary>
+    private void CapturePoint(Vector2 position)
+    {
+        Vector2 viewportSize =
+            new Vector2(viewport.rect.width, viewport.rect.height);
+        Vector2 contentSize =
+            new Vector2(content.rect.width, content.rect.height);
+
+        Vector2 contentPosition = -position + 0.5f * viewportSize;
+
+        contentPosition.x = Mathf.Clamp(contentPosition.x, -contentSize.x + viewportSize.x, 0);
+        contentPosition.y = Mathf.Clamp(contentPosition.y, -contentSize.y + viewportSize.y, 0);
+
+        content.localPosition = contentPosition;
     }
 }
