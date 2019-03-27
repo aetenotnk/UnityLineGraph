@@ -571,8 +571,23 @@ public class LineGraphController : MonoBehaviour
 
         Vector2 contentPosition = -position + 0.5f * viewportSize;
 
-        contentPosition.x = Mathf.Clamp(contentPosition.x, -contentSize.x + viewportSize.x, 0);
-        contentPosition.y = Mathf.Clamp(contentPosition.y, -contentSize.y + viewportSize.y, 0);
+        if(contentSize.x < viewportSize.x)
+        {
+            contentPosition.x = 0.0f;
+        }
+        else
+        {
+            contentPosition.x = Mathf.Clamp(contentPosition.x, -contentSize.x + viewportSize.x, 0);
+        }
+
+        if(contentSize.y < viewportSize.y)
+        {
+            contentPosition.y = 0.0f;
+        }
+        else
+        {
+            contentPosition.y = Mathf.Clamp(contentPosition.y, -contentSize.y + viewportSize.y, 0);
+        }
 
         content.localPosition = contentPosition;
     }
